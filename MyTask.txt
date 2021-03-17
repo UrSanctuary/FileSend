@@ -1,0 +1,5 @@
+Client/Server application to load files from remote HOST.
+- Communication in between client and server should be done by port 7500
+- client has to send list of files in his folder
+- server will request to load one file from the list via specific port. Ex port (7505)
+- client has to send file to the server via port 7505
