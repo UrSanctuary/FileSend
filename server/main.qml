@@ -43,26 +43,31 @@ ApplicationWindow {
             ScrollBar.vertical: ScrollBar {}
 
             delegate: Item {
-                    implicitHeight: 16
-                    width: parent.width
-                    Rectangle {
-                        color: index % 2 === 0 ? "lightgrey" : "white"
-                        anchors.fill: parent
-                    }
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: display
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            console.log('index = ' + index)
-                            client_list_view.currentIndex = index
+                implicitHeight: 16
+                width: parent !== null ? parent.width : 0
+                Rectangle {
+                    color: {
+                        if (client_list_view.currentIndex === index)
+                        {
+                            return "lightblue"
                         }
+                        return index % 2 === 0 ? "ghostwhite" : "lightcyan"
                     }
+                    anchors.fill: parent
+                }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: display
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        client_list_view.currentIndex = index
+                    }
+                }
             }
             focus: true
-            onCurrentIndexChanged: { console.log('item ' + currentIndex + ' selected') }
+            onCurrentIndexChanged: { console.log('client item ' + currentIndex + ' selected') }
         }
 
         ToolSeparator {
@@ -72,21 +77,44 @@ ApplicationWindow {
         ListView {
             id: file_list_view
             model: file_list
-            Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.fillWidth: true
 
-            delegate: Rectangle {
-                implicitHeight: 16
-                z: 1
-                color: index % 2 === 0 ? "lightgrey" : "white"
-                width: parent.width
+            ScrollBar.vertical: ScrollBar {}
+
+            delegate: Item {
+                implicitHeight: 20
+                width: parent !== null ? parent.width : 0
+                Rectangle {
+                    color: {
+                        if (file_list_view.currentIndex === index)
+                        {
+                            return "lightblue"
+                        }
+                        return index % 2 === 0 ? "ghostwhite" : "lightcyan"
+                    }
+                    height: parent.height
+                    width: parent.width
+                    Rectangle {
+                        color: "aquamarine"
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: parent.height * 0.7
+                        width: parent.width * file_list.file_progress(index) / 100
+                    }
+                }
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: display
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        file_list_view.currentIndex = index
+                    }
+                }
             }
-
-            ScrollBar.vertical: ScrollBar {}
+            focus: true
+            onCurrentIndexChanged: { console.log('file item ' + currentIndex + ' selected') }
         }
     }
 }
