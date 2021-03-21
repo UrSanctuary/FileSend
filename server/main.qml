@@ -1,23 +1,31 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
-import QtQuick.Window 2.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Window 2.15
 
+import FileStorage 1.0
 import ClientList 1.0
 import FileList 1.0
 
 ApplicationWindow {
     visible: true
     title: qsTr("FileStorage")
-    width: Screen.width * 1 / 2
-    height: Screen.height * 1 / 2
+    width: Screen.width / 2
+    height: Screen.height / 2
+    id: main_window
+
+    FileStorage {
+        id: file_storage
+    }
 
     ClientList {
         id: client_list
+        storage: file_storage
     }
 
     FileList {
         id: file_list
+        storage: file_storage
     }
 
     header: ToolBar {
@@ -25,20 +33,22 @@ ApplicationWindow {
             ToolButton {
                 text: qsTr("Create fake client")
                 onClicked: {
-
+                    client_list.create_fake_client()
                 }
             }
         }
     }
 
-    RowLayout
+    SplitView
     {
         anchors.fill: parent
         ListView {
             id: client_list_view
             model: client_list
             Layout.fillHeight: true
-            Layout.preferredWidth: parent.width / 5
+            SplitView.preferredWidth: parent.width / 5
+            SplitView.minimumWidth: 100
+            currentIndex: -1
 
             ScrollBar.vertical: ScrollBar {}
 
@@ -49,9 +59,9 @@ ApplicationWindow {
                     color: {
                         if (client_list_view.currentIndex === index)
                         {
-                            return "lightblue"
+                            return "deepskyblue"
                         }
-                        return index % 2 === 0 ? "ghostwhite" : "lightcyan"
+                        return index % 2 === 0 ? "whitesmoke" : "white"
                     }
                     anchors.fill: parent
                 }
@@ -59,6 +69,16 @@ ApplicationWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     text: display
                 }
+
+                Rectangle {
+                    width: parent !== null ? parent.height * 0.8 : 0
+                    height: width
+                    radius: width * 0.5
+                    x: parent.width - width - 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: file_storage.is_client_online(index) ? "lightgreen" : "red"
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
@@ -67,18 +87,18 @@ ApplicationWindow {
                 }
             }
             focus: true
-            onCurrentIndexChanged: { console.log('client item ' + currentIndex + ' selected') }
-        }
-
-        ToolSeparator {
-            Layout.fillHeight: true
+            onCurrentIndexChanged: {
+                file_storage.current_client_index = currentIndex
+                file_list.update_index()
+            }
         }
 
         ListView {
             id: file_list_view
             model: file_list
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+            SplitView.fillHeight: true
+            SplitView.fillWidth: true
+            SplitView.minimumWidth: 200
 
             ScrollBar.vertical: ScrollBar {}
 
@@ -89,23 +109,45 @@ ApplicationWindow {
                     color: {
                         if (file_list_view.currentIndex === index)
                         {
-                            return "lightblue"
+                            return "deepskyblue"
                         }
-                        return index % 2 === 0 ? "ghostwhite" : "lightcyan"
+                        return index % 2 === 0 ? "whitesmoke" : "white"
                     }
                     height: parent.height
                     width: parent.width
-                    Rectangle {
-                        color: "aquamarine"
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: parent.height * 0.7
-                        width: parent.width * file_list.file_progress(index) / 100
-                    }
                 }
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: display
                 }
+
+
+                Canvas {
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: parent.width - 110
+                    height: parent.height
+                    width: 100
+                    ProgressBar {
+                        id: file_progress
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: parent.height
+                        width: 100
+                        from: 0
+                        to: 100
+                        value: file_list.file_progress(index)
+                        Connections {
+                            target: file_list
+                            function onFileProgress(i) {
+                                if (i === index)
+                                {
+                                    file_progress.value = file_list.file_progress(i)
+                                    update()
+                                }
+                            }
+                        }
+                    }
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
@@ -114,7 +156,10 @@ ApplicationWindow {
                 }
             }
             focus: true
-            onCurrentIndexChanged: { console.log('file item ' + currentIndex + ' selected') }
+            onCurrentIndexChanged: {
+                file_list.current_index = file_list_view.currentIndex
+                file_list.update_progress()
+            }
         }
     }
 }

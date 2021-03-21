@@ -3,8 +3,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set (SOURCES
     ClientList.cpp
     ClientList.h
+    FakeConnection.cpp
+    FakeConnection.h
     FileList.cpp
     FileList.h
+    FileStorage.cpp
+    FileStorage.h
     main.cpp
     qml.qrc
 )
@@ -12,6 +16,7 @@ set (SOURCES
 qt_wrap_cpp(SOURCES
     ClientList.h
     FileList.h
+    FileStorage.h
 )
 
 add_executable(server ${SOURCES})

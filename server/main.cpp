@@ -1,5 +1,6 @@
 #include "ClientList.h"
 #include "FileList.h"
+#include "FileStorage.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -10,6 +11,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+    REGISTER_TYPE(FileStorage);
     REGISTER_TYPE(ClientList);
     REGISTER_TYPE(FileList);
 

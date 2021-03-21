@@ -2,35 +2,20 @@
 
 #include <QRandomGenerator>
 
-FileEntry::FileEntry(const QString &name, quint32 progress)
-    : m_name(name)
-    , m_progress(progress)
-{
-}
-
-const QString &FileEntry::name() const
-{
-    return m_name;
-}
-
-quint32 FileEntry::progress() const
-{
-    return m_progress;
-}
-
 FileList::FileList()
+    : m_files(nullptr)
 {
-    QRandomGenerator rg;
-    for (int i = 1; i <= 150; ++i)
-    {
-        auto s = QString("file %1").arg(i);
-        m_files.push_back({s, rg.generate() % 101});
-    }
+    connect(&m_timer, &QTimer::timeout, this, &FileList::on_timer);
+    m_timer.start(100);
 }
 
 int FileList::rowCount(const QModelIndex &) const
 {
-    return m_files.size();
+    if (!m_files)
+    {
+        return 0;
+    }
+    return m_files->size();
 }
 
 int FileList::columnCount(const QModelIndex &) const
@@ -40,22 +25,64 @@ int FileList::columnCount(const QModelIndex &) const
 
 QVariant FileList::data(const QModelIndex &index, int role) const
 {
-    if (role != Qt::DisplayRole)
+    if (!m_files || role != Qt::DisplayRole)
     {
         return {};
     }
-    if (index.row() >= m_files.size())
+    if (index.row() >= m_files->size())
     {
         return {};
     }
-    return m_files[index.row()].name();
+    return (*m_files)[index.row()].name();
 }
 
 quint32 FileList::file_progress(int index)
 {
-    if (index >= m_files.size())
+    if (!m_files || index >= m_files->size() || index < 0)
     {
         return 0;
     }
-    return m_files[index].progress();
+    return (*m_files)[index].progress();
+}
+
+FileStorage *FileList::storage()
+{
+    return m_storage;
+}
+
+void FileList::set_storage(FileStorage *s)
+{
+    m_storage = s;
+}
+
+void FileList::update_index()
+{
+    beginResetModel();
+    m_files = &m_storage->current_files();
+    endResetModel();
+}
+
+quint32 FileList::current_index()
+{
+    return m_current_index;
+}
+void FileList::set_current_index(quint32 index)
+{
+    m_current_index = index;
+}
+
+void FileList::update_progress()
+{
+}
+
+void FileList::on_timer()
+{
+    if (!m_storage ||
+        m_storage->current_client_index() >= static_cast<quint32>(m_storage->clients().size()) ||
+        m_current_index >= static_cast<quint32>(m_storage->current_files().size()))
+    {
+        return;
+    }
+    m_storage->current_files()[m_current_index].update_progress();
+    emit fileProgress(m_current_index);
 }
