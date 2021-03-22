@@ -121,28 +121,22 @@ ApplicationWindow {
                     text: display
                 }
 
-
-                Canvas {
+                ProgressBar {
+                    id: file_progress
                     anchors.verticalCenter: parent.verticalCenter
-                    x: parent.width - 110
                     height: parent.height
+                    x: parent.width - 110
                     width: 100
-                    ProgressBar {
-                        id: file_progress
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: parent.height
-                        width: 100
-                        from: 0
-                        to: 100
-                        value: file_list.file_progress(index)
-                        Connections {
-                            target: file_list
-                            function onFileProgress(i) {
-                                if (i === index)
-                                {
-                                    file_progress.value = file_list.file_progress(i)
-                                    update()
-                                }
+                    from: 0
+                    to: 100
+                    value: file_list.file_progress(index)
+                    Connections {
+                        target: file_list
+                        function onFileProgress(i) {
+                            if (i === index)
+                            {
+                                file_progress.value = file_list.file_progress(i)
+                                update()
                             }
                         }
                     }
