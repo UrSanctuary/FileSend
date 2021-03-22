@@ -1,7 +1,5 @@
 #pragma once
 
-#include "FakeConnection.h"
-
 #include <QObject>
 
 class FileEntry
@@ -55,6 +53,4 @@ signals:
 private:
     QVector<ClientEntry> m_clients;
     quint32 m_current_client_index;
-
-    FakeConnection m_connection;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "FakeConnection.h"
 #include "FileStorage.h"
 
 #include <QAbstractListModel>
@@ -23,4 +24,5 @@ public:
 
 private:
     FileStorage *m_storage = nullptr;
+    FakeConnection m_connection;
 };

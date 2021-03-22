@@ -1,7 +1,9 @@
 #pragma once
 
+#include "FileStorage.h"
+
 class FakeConnection
 {
 public:
-    FakeConnection();
+    ClientEntry create_client();
 };

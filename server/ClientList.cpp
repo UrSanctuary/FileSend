@@ -1,22 +1,5 @@
 #include "ClientList.h"
 
-#include <QRandomGenerator>
-
-QRandomGenerator s_rg(time(0));
-
-QString generate_random_name(uint32_t len)
-{
-    QString name;
-    static const unsigned char l = 'a';
-    static const unsigned char h = 'z';
-
-    for (uint32_t i = 0; i < len; ++i)
-    {
-        name.push_back(s_rg.generate() % (h - l + 1) + l);
-    }
-    return name;
-}
-
 ClientList::ClientList()
 {
 }
@@ -65,16 +48,7 @@ void ClientList::create_fake_client()
         return;
     }
     auto &clients = m_storage->clients();
-    //    beginResetModel();
     beginInsertRows(QModelIndex(), clients.size(), clients.size());
-    clients.push_back({generate_random_name(6), s_rg.generate() % 2 == 0});
-
-    const uint32_t files_count = s_rg.generate() % 91 + 10;
-    auto &client = clients.back();
-    for (uint32_t i = 0; i < files_count; ++i)
-    {
-        client.files().push_back({generate_random_name(8), s_rg.generate() % 101});
-    }
+    clients.push_back(m_connection.create_client());
     endInsertRows();
-    //    endResetModel();
 }
