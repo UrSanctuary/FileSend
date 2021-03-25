@@ -1,22 +1,23 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
+
 int main()
 {
-    std::vector<int> sexOfShip;
     int i = 0;
     int b = 0;
-    srand(time(NULL));
-    //girls = i-1; 
-    //boy = 1;
-    while (b != 1)
-    {
-        b = rand() % 2;
-        sexOfShip.push_back(b);
-        std::cout << sexOfShip[i] << std::endl;
-        i++;
+    int numOfFam = 1000;
+    srand((unsigned)time(NULL));
+    for (int j = 0; j < numOfFam; ++j) {
+        while (b != 1)
+        {
+            b = rand() % 2;
+            i++;
+        }
+        b = 0;
     }
-    double pers = (((double)i - 1) / (double)i)*100 ;
-    std::cout << "Girls in this family " << pers << "%\nBoys in this family " << (100 - pers) << "%"<<std::endl;
+    double res = (((double)numOfFam) / (double)i)*100;
+    std::cout <<"Out of selection of " << numOfFam <<" families - "<< res<<"% will be boys ";
+    std::cout << "and "<< 100-res << "% will be girls\n";
+    
 }
-
