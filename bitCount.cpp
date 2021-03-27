@@ -1,6 +1,6 @@
 #include <iostream>
 
-int countSetBits(int n)
+unsigned int countSetBits(unsigned int n)
 {
     unsigned int count = 0;
     while (n) {
